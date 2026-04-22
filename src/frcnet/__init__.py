@@ -9,6 +9,7 @@ from frcnet.data import (
     collate_manifest_samples,
     load_plan_a_source_datasets,
     read_manifest_jsonl,
+    validate_manifest_records,
     validate_batch_input,
     write_manifest_jsonl,
 )
@@ -26,7 +27,14 @@ from frcnet.evaluation import (
 )
 from frcnet.models import FRCNetModel, ModelOutput
 from frcnet.training import LossBreakdown, compute_total_loss, run_train_step
-from frcnet.utils import RuntimeSpec, completion_score, content_entropy, move_batch_to_device, resolve_runtime
+from frcnet.utils import (
+    RuntimeSpec,
+    completion_score,
+    content_entropy,
+    move_batch_to_device,
+    resolve_runtime,
+    resolution_weighted_content_entropy,
+)
 
 __all__ = [
     "__version__",
@@ -52,14 +60,16 @@ __all__ = [
     "read_manifest_jsonl",
     "read_sample_analysis_records",
     "resolve_runtime",
+    "resolution_weighted_content_entropy",
     "run_inference_export",
     "run_train_step",
     "summarize_matched_ambiguous_vs_ood",
     "validate_batch_input",
+    "validate_manifest_records",
     "write_manifest_jsonl",
     "write_matched_benchmark_summary",
     "write_sample_analysis_records",
     "write_top1_proposition_records",
 ]
 
-__version__ = "0.1.0"
+__version__ = "0.3.0"
