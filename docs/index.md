@@ -3,7 +3,7 @@
 - document_id: docs_index
 - status: baselined
 - owner: frcnet_project
-- last_updated: 2026-04-22
+- last_updated: 2026-04-24
 - standard_alignment: iso_8601, iso_iec_ieee_15289, iso_iec_11179_inspired
 
 ## 1. 目的
@@ -37,6 +37,10 @@
 - [方案 A v0.3debug R2 协议](architecture/plan_a_v0_3debug_r2_protocol.md)
 - [运行环境矩阵](architecture/runtime_environment_matrix.md)
 - [项目结构说明](architecture/project_structure.md)
+
+### 3.3.1 Roadmap
+
+- [FRCNet Next v0.1 分阶段开发计划](roadmap/frcnet_next_v0_1_phased_development.md)
 
 ### 3.4 Verification
 
