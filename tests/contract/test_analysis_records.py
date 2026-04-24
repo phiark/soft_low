@@ -31,9 +31,14 @@ def test_sample_analysis_records_expose_paper_fields():
     first_record = records[0]
     assert first_record.run_id == "RUN-1"
     assert hasattr(first_record, "resolution_ratio")
+    assert hasattr(first_record, "state_content_entropy")
+    assert hasattr(first_record, "state_weighted_content_entropy")
+    assert hasattr(first_record, "state_entropy")
     assert hasattr(first_record, "content_entropy")
     assert hasattr(first_record, "resolution_weighted_content_entropy")
     assert hasattr(first_record, "proposition_truth_ratio")
+    assert hasattr(first_record, "top1_view_tau")
+    assert hasattr(first_record, "top1_completion_beta_0_1")
     assert hasattr(first_record, "resolution_entropy")
     assert hasattr(first_record, "ternary_entropy")
     assert hasattr(first_record, "auxiliary_top1_content_probability")
@@ -93,6 +98,19 @@ def test_matched_summary_rejects_invalid_scalar_name():
 
     with pytest.raises(ValueError, match="Unsupported primary_scalar"):
         summarize_matched_ambiguous_vs_ood(duplicated_records, primary_scalar="predicted_class_index")
+
+
+def test_matched_summary_rejects_label_aware_primary_scalar():
+    batch_input = build_synthetic_batch()
+    model = FRCNetModel(num_classes=10)
+    model_output = model(batch_input.image)
+    sample_records = build_sample_analysis_records(model_output, batch_input, run_id="RUN-1", protocol_id="plan_a_v1")
+    duplicated_records = [replace(record) for record in sample_records] + [replace(record) for record in sample_records]
+    for index, record in enumerate(duplicated_records):
+        record.sample_id = f"{record.sample_id}-{index}"
+
+    with pytest.raises(ValueError, match="label-aware"):
+        summarize_matched_ambiguous_vs_ood(duplicated_records, primary_scalar="proposition_truth_ratio")
 
 
 def test_load_plan_a_source_datasets_suppresses_numpy_visible_deprecation_warning(monkeypatch):

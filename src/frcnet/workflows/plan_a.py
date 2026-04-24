@@ -45,6 +45,7 @@ from frcnet.evaluation import (
     DEFAULT_MODEL_FAMILY,
     build_top1_proposition_records,
     read_analysis_export_summary,
+    read_matched_manifest_jsonl,
     read_sample_analysis_records,
     read_top1_proposition_records,
     run_inference_export,
@@ -213,16 +214,17 @@ def _resolve_eval_config(eval_config_path: str | Path | None) -> dict[str, str |
         return {
             "positive_cohort": "ambiguous_id",
             "negative_cohort": "ood",
-            "primary_pair": "resolution_ratio__content_entropy",
-            "weighted_pair": "resolution_ratio__resolution_weighted_content_entropy",
-            "primary_scalar": "completion_score_beta_0_1",
+            "primary_pair": "resolution_ratio__state_content_entropy",
+            "weighted_pair": "resolution_ratio__state_weighted_content_entropy",
+            "primary_scalar": "top1_completion_beta_0_1",
             "tau_scalar_name": "proposition_truth_ratio",
             "completion_scan_scalars": (
-                "completion_score_beta_0_1",
-                "completion_score_beta_0_25",
-                "completion_score_beta_0_5",
-                "completion_score_beta_0_75",
+                "top1_completion_beta_0_1",
+                "top1_completion_beta_0_25",
+                "top1_completion_beta_0_5",
+                "top1_completion_beta_0_75",
             ),
+            "matched_manifest_path": "",
             "emit_proposition_diagnostics": True,
             "test_size": 0.3,
             "random_state": 7,
@@ -232,22 +234,23 @@ def _resolve_eval_config(eval_config_path: str | Path | None) -> dict[str, str |
     completion_scan_scalars = eval_config.get(
         "completion_scan_scalars",
         (
-            "completion_score_beta_0_1",
-            "completion_score_beta_0_25",
-            "completion_score_beta_0_5",
-            "completion_score_beta_0_75",
+            "top1_completion_beta_0_1",
+            "top1_completion_beta_0_25",
+            "top1_completion_beta_0_5",
+            "top1_completion_beta_0_75",
         ),
     )
     return {
         "positive_cohort": str(eval_config.get("positive_cohort", "ambiguous_id")),
         "negative_cohort": str(eval_config.get("negative_cohort", "ood")),
-        "primary_pair": str(eval_config.get("primary_pair", "resolution_ratio__content_entropy")),
+        "primary_pair": str(eval_config.get("primary_pair", "resolution_ratio__state_content_entropy")),
         "weighted_pair": str(
-            eval_config.get("weighted_pair", "resolution_ratio__resolution_weighted_content_entropy")
+            eval_config.get("weighted_pair", "resolution_ratio__state_weighted_content_entropy")
         ),
-        "primary_scalar": str(eval_config.get("primary_scalar", "completion_score_beta_0_1")),
+        "primary_scalar": str(eval_config.get("primary_scalar", "top1_completion_beta_0_1")),
         "tau_scalar_name": str(eval_config.get("tau_scalar_name", "proposition_truth_ratio")),
         "completion_scan_scalars": tuple(str(value) for value in completion_scan_scalars),
+        "matched_manifest_path": str(eval_config.get("matched_manifest_path", "")),
         "emit_proposition_diagnostics": bool(eval_config.get("emit_proposition_diagnostics", True)),
         "test_size": float(eval_config.get("test_size", 0.3)),
         "random_state": int(eval_config.get("random_state", 7)),
@@ -1898,6 +1901,13 @@ def generate_plan_a_artifact_bundle(
         sample_analysis_records,
         output_root / analysis_config.get("cohort_summary_table_name", "cohort_summary_table.csv"),
     )
+    matched_manifest_records = None
+    matched_manifest_path_value = str(resolved_eval_config.get("matched_manifest_path", ""))
+    if matched_manifest_path_value:
+        matched_manifest_path = Path(matched_manifest_path_value)
+        if not matched_manifest_path.is_absolute():
+            matched_manifest_path = Path.cwd() / matched_manifest_path
+        matched_manifest_records = tuple(read_matched_manifest_jsonl(matched_manifest_path))
     matched_summary = summarize_matched_ambiguous_vs_ood(
         sample_analysis_records,
         positive_cohort=str(resolved_eval_config["positive_cohort"]),
@@ -1908,6 +1918,7 @@ def generate_plan_a_artifact_bundle(
         completion_scan_scalars=tuple(resolved_eval_config["completion_scan_scalars"]),
         test_size=float(resolved_eval_config["test_size"]),
         random_state=int(resolved_eval_config["random_state"]),
+        matched_manifest_records=matched_manifest_records,
     )
     matched_path = write_matched_benchmark_summary(
         matched_summary,
@@ -1921,6 +1932,7 @@ def generate_plan_a_artifact_bundle(
         scalar_names=tuple(resolved_eval_config["completion_scan_scalars"]),
         test_size=float(resolved_eval_config["test_size"]),
         random_state=int(resolved_eval_config["random_state"]),
+        matched_manifest_records=matched_manifest_records,
     )
     proposition_diagnostic_table_path: Path | None = None
     proposition_tau_roc_curve_path: Path | None = None
@@ -1933,6 +1945,7 @@ def generate_plan_a_artifact_bundle(
             scalar_names=tuple(analysis_config.get("proposition_diagnostic_scalars", ())),
             test_size=float(resolved_eval_config["test_size"]),
             random_state=int(resolved_eval_config["random_state"]),
+            matched_manifest_records=matched_manifest_records,
         )
         proposition_tau_roc_curve_path = write_scalar_roc_curve(
             sample_analysis_records,
@@ -1942,6 +1955,7 @@ def generate_plan_a_artifact_bundle(
             scalar_name=str(resolved_eval_config["tau_scalar_name"]),
             test_size=float(resolved_eval_config["test_size"]),
             random_state=int(resolved_eval_config["random_state"]),
+            matched_manifest_records=matched_manifest_records,
             dpi=figure_dpi,
         )
 

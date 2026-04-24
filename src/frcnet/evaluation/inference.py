@@ -6,14 +6,14 @@ import torch
 from torch.utils.data import DataLoader
 
 from frcnet.data import BatchInput
+from frcnet.evaluation.beta_policy import completion_from_masses
+from frcnet.evaluation.proposition_views import build_top1_view
 from frcnet.evaluation.records import DEFAULT_MODEL_FAMILY, SampleAnalysisRecord, Top1PropositionRecord
+from frcnet.evaluation.state_metrics import compute_state_metrics
 from frcnet.models import FRCNetModel, ModelOutput
 from frcnet.utils import (
-    completion_score,
-    content_entropy,
     move_batch_to_device,
     resolution_entropy,
-    resolution_weighted_content_entropy,
     ternary_entropy_from_masses,
 )
 
@@ -47,16 +47,16 @@ def build_sample_analysis_records(
     model_family: str = DEFAULT_MODEL_FAMILY,
 ) -> list[SampleAnalysisRecord]:
     predicted_class_index = torch.argmax(model_output.class_mass, dim=1)
-    auxiliary_top1_content_probability = model_output.content_distribution.gather(
-        1, predicted_class_index.unsqueeze(1)
-    ).squeeze(1)
-    entropy = content_entropy(model_output.content_distribution)
-    weighted_entropy = resolution_weighted_content_entropy(model_output.resolution_ratio, entropy)
+    state_metrics = compute_state_metrics(model_output.resolution_ratio, model_output.content_distribution)
+    entropy = state_metrics.state_content_entropy
+    weighted_entropy = state_metrics.state_weighted_content_entropy
     resolution_entropy_value = resolution_entropy(model_output.resolution_ratio)
-    score_beta_0_1 = completion_score(model_output.class_mass, model_output.unknown_mass, beta=0.1)
-    score_beta_0_25 = completion_score(model_output.class_mass, model_output.unknown_mass, beta=0.25)
-    score_beta_0_5 = completion_score(model_output.class_mass, model_output.unknown_mass, beta=0.5)
-    score_beta_0_75 = completion_score(model_output.class_mass, model_output.unknown_mass, beta=0.75)
+    top1_view = build_top1_view(model_output.class_mass, model_output.unknown_mass)
+    auxiliary_top1_content_probability = top1_view.truth_ratio
+    score_beta_0_1 = completion_from_masses(top1_view.truth_mass, top1_view.unknown_mass, beta=0.1)
+    score_beta_0_25 = completion_from_masses(top1_view.truth_mass, top1_view.unknown_mass, beta=0.25)
+    score_beta_0_5 = completion_from_masses(top1_view.truth_mass, top1_view.unknown_mass, beta=0.5)
+    score_beta_0_75 = completion_from_masses(top1_view.truth_mass, top1_view.unknown_mass, beta=0.75)
     top1_class_mass = model_output.class_mass.gather(1, predicted_class_index.unsqueeze(1)).squeeze(1)
     proposition_target_mask = _build_proposition_target_mask(
         batch_input,

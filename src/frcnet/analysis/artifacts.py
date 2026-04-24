@@ -17,6 +17,7 @@ from frcnet.evaluation.matched_benchmark import (
     summarize_scalar_benchmarks,
     write_scalar_benchmark_summaries,
 )
+from frcnet.evaluation.matched_manifest import MatchedManifestRecord
 
 COHORT_COLORS = {
     "easy_id": "#1f77b4",
@@ -193,6 +194,7 @@ def write_scalar_roc_curve(
     scalar_name: str,
     test_size: float,
     random_state: int,
+    matched_manifest_records: tuple[MatchedManifestRecord, ...] | None = None,
     dpi: int = 200,
 ) -> Path:
     output = Path(output_path)
@@ -204,6 +206,7 @@ def write_scalar_roc_curve(
         scalar_name=scalar_name,
         test_size=test_size,
         random_state=random_state,
+        matched_manifest_records=matched_manifest_records,
     )
 
     plt.figure(figsize=(7, 6))
@@ -238,6 +241,9 @@ def write_cohort_summary_table(records: list[SampleAnalysisRecord], output_path:
             "count",
             "mean_resolution_ratio",
             "mean_unknown_mass",
+            "mean_state_content_entropy",
+            "mean_state_weighted_content_entropy",
+            "mean_state_entropy",
             "mean_content_entropy",
             "mean_resolution_weighted_content_entropy",
             "mean_resolution_entropy",
@@ -262,6 +268,11 @@ def write_cohort_summary_table(records: list[SampleAnalysisRecord], output_path:
                     "count": len(cohort_records),
                     "mean_resolution_ratio": mean(record.resolution_ratio for record in cohort_records),
                     "mean_unknown_mass": mean(record.unknown_mass for record in cohort_records),
+                    "mean_state_content_entropy": mean(record.state_content_entropy for record in cohort_records),
+                    "mean_state_weighted_content_entropy": mean(
+                        record.state_weighted_content_entropy for record in cohort_records
+                    ),
+                    "mean_state_entropy": mean(record.state_entropy for record in cohort_records),
                     "mean_content_entropy": mean(record.content_entropy for record in cohort_records),
                     "mean_resolution_weighted_content_entropy": mean(
                         record.resolution_weighted_content_entropy for record in cohort_records
@@ -301,6 +312,7 @@ def write_completion_scan_table(
     scalar_names: tuple[str, ...],
     test_size: float,
     random_state: int,
+    matched_manifest_records: tuple[MatchedManifestRecord, ...] | None = None,
 ) -> Path:
     summaries = summarize_scalar_benchmarks(
         records,
@@ -309,6 +321,7 @@ def write_completion_scan_table(
         negative_cohort=negative_cohort,
         test_size=test_size,
         random_state=random_state,
+        matched_manifest_records=matched_manifest_records,
     )
     return write_scalar_benchmark_summaries(summaries, output_path)
 
@@ -322,6 +335,7 @@ def write_proposition_diagnostic_table(
     scalar_names: tuple[str, ...],
     test_size: float,
     random_state: int,
+    matched_manifest_records: tuple[MatchedManifestRecord, ...] | None = None,
 ) -> Path:
     summaries = summarize_scalar_benchmarks(
         records,
@@ -330,6 +344,8 @@ def write_proposition_diagnostic_table(
         negative_cohort=negative_cohort,
         test_size=test_size,
         random_state=random_state,
+        matched_manifest_records=matched_manifest_records,
+        allow_label_aware=True,
     )
     return write_scalar_benchmark_summaries(summaries, output_path)
 

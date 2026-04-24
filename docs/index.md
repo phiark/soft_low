@@ -35,6 +35,7 @@
 - [方案 A v0.3 研究协议](architecture/plan_a_v0_3_protocol.md)
 - [方案 A v0.3debug 理论对齐协议](architecture/plan_a_v0_3debug_protocol.md)
 - [方案 A v0.3debug R2 协议](architecture/plan_a_v0_3debug_r2_protocol.md)
+- [方案 A next-v0.1 语义修复协议](architecture/plan_a_next_v0_1_protocol.md)
 - [运行环境矩阵](architecture/runtime_environment_matrix.md)
 - [项目结构说明](architecture/project_structure.md)
 
@@ -54,6 +55,7 @@
 - [ADR-0003 v0.3 研究基线](../records/decisions/adr_0003_v0_3_research_baseline.md)
 - [ADR-0004 v0.3debug 理论对齐修复](../records/decisions/adr_0004_v0_3debug_theory_alignment_repair.md)
 - [ADR-0005 v0.3debug R2 benchmark 与 geometry 修复](../records/decisions/adr_0005_v0_3debug_r2_benchmark_and_geometry_repair.md)
+- [ADR-0006 next-v0.1 语义拆层与公平 matched benchmark](../records/decisions/adr_0006_next_v0_1_semantic_repair.md)
 
 ### 3.6 Templates
 

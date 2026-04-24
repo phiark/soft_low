@@ -46,6 +46,52 @@ class SampleAnalysisRecord:
     def top1_content_probability(self) -> float:
         return self.auxiliary_top1_content_probability
 
+    @property
+    def state_content_entropy(self) -> float:
+        return self.content_entropy
+
+    @property
+    def state_weighted_content_entropy(self) -> float:
+        return self.resolution_weighted_content_entropy
+
+    @property
+    def state_entropy(self) -> float:
+        return self.resolution_entropy + self.resolution_weighted_content_entropy
+
+    @property
+    def top1_view_truth_mass(self) -> float:
+        return self.top1_class_mass
+
+    @property
+    def top1_view_false_mass(self) -> float:
+        return max(0.0, self.resolution_ratio - self.top1_class_mass)
+
+    @property
+    def top1_view_unknown_mass(self) -> float:
+        return self.unknown_mass
+
+    @property
+    def top1_view_tau(self) -> float:
+        if self.resolution_ratio <= 0.0:
+            return 0.0
+        return max(0.0, min(1.0, self.top1_class_mass / self.resolution_ratio))
+
+    @property
+    def top1_completion_beta_0_1(self) -> float:
+        return self.completion_score_beta_0_1
+
+    @property
+    def top1_completion_beta_0_25(self) -> float:
+        return self.completion_score_beta_0_25
+
+    @property
+    def top1_completion_beta_0_5(self) -> float:
+        return self.completion_score_beta_0_5
+
+    @property
+    def top1_completion_beta_0_75(self) -> float:
+        return self.completion_score_beta_0_75
+
     def to_csv_row(self) -> dict[str, str | float | int]:
         return {
             "model_family": self.model_family,
@@ -60,16 +106,27 @@ class SampleAnalysisRecord:
             "predicted_class_index": self.predicted_class_index,
             "resolution_ratio": self.resolution_ratio,
             "unknown_mass": self.unknown_mass,
+            "state_content_entropy": self.state_content_entropy,
+            "state_weighted_content_entropy": self.state_weighted_content_entropy,
+            "state_entropy": self.state_entropy,
             "content_entropy": self.content_entropy,
             "resolution_weighted_content_entropy": self.resolution_weighted_content_entropy,
             "resolution_entropy": self.resolution_entropy,
             "top1_class_mass": self.top1_class_mass,
+            "top1_view_truth_mass": self.top1_view_truth_mass,
+            "top1_view_false_mass": self.top1_view_false_mass,
+            "top1_view_unknown_mass": self.top1_view_unknown_mass,
+            "top1_view_tau": self.top1_view_tau,
             "proposition_truth_mass": self.proposition_truth_mass,
             "proposition_false_mass": self.proposition_false_mass,
             "proposition_unknown_mass": self.proposition_unknown_mass,
             "proposition_truth_ratio": self.proposition_truth_ratio,
             "ternary_entropy": self.ternary_entropy,
             "auxiliary_top1_content_probability": self.auxiliary_top1_content_probability,
+            "top1_completion_beta_0_1": self.top1_completion_beta_0_1,
+            "top1_completion_beta_0_25": self.top1_completion_beta_0_25,
+            "top1_completion_beta_0_5": self.top1_completion_beta_0_5,
+            "top1_completion_beta_0_75": self.top1_completion_beta_0_75,
             "completion_score_beta_0_1": self.completion_score_beta_0_1,
             "completion_score_beta_0_25": self.completion_score_beta_0_25,
             "completion_score_beta_0_5": self.completion_score_beta_0_5,
