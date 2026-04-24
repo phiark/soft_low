@@ -7,7 +7,7 @@
 
 ## 1. 目标
 
-`next-v0.1` 在 `v0.3debug_r2` 之后修复实验语义和公平评估骨架。它不改变 FRCNet 主体结构, 只把 state / proposition / completion / matched benchmark 的边界拆清楚。
+`next-v0.1` 修复实验语义和公平评估骨架。它不改变 FRCNet 主体结构, 只把 state / proposition / completion / matched benchmark 的边界拆清楚。
 
 ## 2. 拆层口径
 
@@ -82,7 +82,7 @@ Softmax CE reference 是最小辅助 pipeline:
 - 使用同 backbone
 - 只训练 in-domain class label 样本
 - 只导出 `softmax_entropy` 或 `softmax_max_probability`
-- 不作为完整 baseline study 行
+- 不作为完整 baseline 主实验
 
 ## 6. 兼容性
 

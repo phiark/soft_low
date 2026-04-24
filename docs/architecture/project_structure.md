@@ -3,7 +3,7 @@
 - document_id: arch_project_structure
 - status: baselined
 - owner: frcnet_project
-- last_updated: 2026-04-18
+- last_updated: 2026-04-24
 
 ## 1. 设计原则
 
@@ -39,10 +39,12 @@ HardMin/
 │       ├── training/
 │       ├── evaluation/
 │       ├── analysis/
+│       ├── workflows/
 │       └── utils/
 ├── configs/
 │   ├── model/
 │   ├── data/
+│   ├── protocol/
 │   ├── train/
 │   ├── eval/
 │   └── analysis/
@@ -54,9 +56,7 @@ HardMin/
 ├── artifacts/
 │   ├── figures/
 │   ├── tables/
-│   ├── reports/
-│   ├── checkpoints/
-│   └── logs/
+│   └── reports/
 └── notebooks/
 ```
 
@@ -99,11 +99,11 @@ HardMin/
 
 ## 5. 推荐后续补充
 
-初始化之后, 建议下一批文件优先落在:
+`next-v0.1` 当前活跃文件优先落在:
 
-1. `configs/model/frcnet_resnet18_base.yaml`
-2. `configs/data/cifar10_svhn_small.yaml`
-3. `src/frcnet/models/frcnet_model.py`
-4. `src/frcnet/training/losses.py`
-5. `tests/contract/test_output_contracts.py`
-
+1. `src/frcnet/evaluation/state_metrics.py`
+2. `src/frcnet/evaluation/proposition_views.py`
+3. `src/frcnet/evaluation/beta_policy.py`
+4. `src/frcnet/evaluation/matched_manifest.py`
+5. `src/frcnet/evaluation/scalar_baselines.py`
+6. `configs/eval/plan_a_next_v0_1_matched_manifest.yaml`

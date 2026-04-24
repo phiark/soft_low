@@ -3,7 +3,7 @@
 - document_id: gov_naming_identifier_standard
 - status: baselined
 - owner: frcnet_project
-- last_updated: 2026-04-22
+- last_updated: 2026-04-24
 - standard_alignment: iso_8601, iso_iec_11179_inspired
 
 ## 1. 目标
@@ -53,14 +53,14 @@
 | `p_k` | class mass | `class_mass` | `resolution_ratio * content_distribution` |
 | `u` | unknown mass | `unknown_mass` | `1 - resolution_ratio` |
 | `p_top1` | top-1 class mass | `top1_class_mass` | top-1 的 `class_mass` |
-| `tau` / `τ` | proposition truth ratio | `proposition_truth_ratio` | 规范口径是命题层 `p_T / (p_T + p_F)` |
-| `H_cont` | content entropy | `content_entropy` | 对 `content_distribution` 求熵 |
-| `r H_cont` | resolution-weighted content entropy | `resolution_weighted_content_entropy` | 对 `resolution_ratio * content_entropy` 的显式导出 |
+| `tau_A` / `τ_A` | proposition truth ratio under view A | `top1_view_tau`, `target_view_tau`, `candidate_view_tau` | `target` / `candidate` 只能作为 label-aware audit |
+| `H_K(c)` | K-class state content entropy | `state_content_entropy` | 对 `content_distribution` 求熵 |
+| `r H_K(c)` | resolution-weighted state entropy | `state_weighted_content_entropy` | 对 `resolution_ratio * state_content_entropy` 的显式导出 |
 | `H_res` | resolution entropy | `resolution_entropy` | 对 `resolution_ratio` 的二元熵 |
 | `H_3` | ternary entropy | `ternary_entropy` | 对显式状态求熵 |
 | auxiliary `tau` surrogate | top-1 content probability | `auxiliary_top1_content_probability` | 保留为辅助诊断量, 不再作为规范 `tau` |
 | `beta` / `β` | completion policy parameter | `completion_policy_beta` | 下游读出策略参数 |
-| `q_beta` | completion score | `completion_score` | 标量读出 |
+| `q_beta(A)` | completion score under proposition view A | `top1_completion_beta_*` | 标量读出必须绑定 view |
 | `S` | candidate class set | `candidate_class_set` | 歧义监督候选类集合 |
 | `r0` | ambiguous resolution target | `ambiguous_resolution_target` | 歧义样本的目标解析度 |
 | `lambda_r` | ambiguous resolution weight | `ambiguous_resolution_weight` | 歧义正则权重 |
@@ -70,8 +70,8 @@
 
 ## 4. 派生变量命名规则
 
-- 多个 beta 对应的 completion score 用 `completion_score_by_beta`
-- 标量表格列名使用全名, 例如 `resolution_ratio`, `content_entropy`
+- 多个 beta 对应的 completion score 用 `top1_completion_beta_0_1` 这类显式字段
+- 标量表格列名使用全名, 例如 `resolution_ratio`, `state_content_entropy`
 - 批量张量用 `_batch` 后缀, 例如 `resolution_ratio_batch`
 - 掩码使用 `_mask`, 例如 `is_unknown_sample_mask`
 - 索引使用 `_index` 或 `_indices`
@@ -108,5 +108,5 @@
 - 不把 `unknown_mass` 命名为 `uncertainty`, 因为含义过宽
 - 不把 `content_distribution` 或 `auxiliary_top1_content_probability` 命名为 `tau`, 因为规范 `tau` 是命题级 `proposition_truth_ratio`
 - 不把 `proposition_truth_ratio` 放回主 matched benchmark 里充当公平 scalar baseline, 它属于 proposition diagnostics
-- 不把 `completion_score` 当作模型唯一主输出
+- 不把 `completion_score` 当作模型唯一主输出或全局 confidence
 - 不在不同文件中混用 `vacuity`, `unknown_mass`, `unresolved_mass` 指向同一对象而不声明

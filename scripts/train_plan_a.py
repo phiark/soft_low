@@ -20,7 +20,7 @@ os.environ.setdefault("XDG_CACHE_HOME", str(REPO_ROOT / ".cache"))
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train FRCNet on a Plan A manifest-backed protocol.")
-    parser.add_argument("--protocol-config", default="configs/protocol/plan_a_v1_train.yaml")
+    parser.add_argument("--protocol-config", default="configs/protocol/plan_a_next_v0_1_train.yaml")
     parser.add_argument("--model-config", default="configs/model/frcnet_resnet18_base.yaml")
     parser.add_argument("--train-config", default="configs/train/plan_a_train_base.yaml")
     parser.add_argument("--validation-protocol-config", default=None)

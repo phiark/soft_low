@@ -15,7 +15,7 @@ from frcnet.workflows import export_plan_a_inference_bundle, timestamp_run_id
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run inference export for Plan A.")
-    parser.add_argument("--protocol-config", default="configs/protocol/plan_a_v1.yaml")
+    parser.add_argument("--protocol-config", default="configs/protocol/plan_a_next_v0_1_analysis.yaml")
     parser.add_argument("--model-config", default="configs/model/frcnet_resnet18_base.yaml")
     parser.add_argument("--manifest-path", required=True)
     parser.add_argument("--output-dir", default=None)

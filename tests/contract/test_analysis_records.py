@@ -25,7 +25,12 @@ def test_sample_analysis_records_expose_paper_fields():
     model = FRCNetModel(num_classes=10)
     model_output = model(batch_input.image)
 
-    records = build_sample_analysis_records(model_output, batch_input, run_id="RUN-1", protocol_id="plan_a_v1")
+    records = build_sample_analysis_records(
+        model_output,
+        batch_input,
+        run_id="RUN-1",
+        protocol_id="plan_a_next_v0_1_analysis",
+    )
 
     assert len(records) == batch_input.batch_size
     first_record = records[0]
@@ -51,7 +56,12 @@ def test_top1_proposition_records_cover_all_cohorts_and_preserve_proposition_mas
     batch_input = build_synthetic_batch()
     model = FRCNetModel(num_classes=10)
     model_output = model(batch_input.image)
-    sample_records = build_sample_analysis_records(model_output, batch_input, run_id="RUN-1", protocol_id="plan_a_v1")
+    sample_records = build_sample_analysis_records(
+        model_output,
+        batch_input,
+        run_id="RUN-1",
+        protocol_id="plan_a_next_v0_1_analysis",
+    )
 
     proposition_records = build_top1_proposition_records(sample_records)
 
@@ -71,7 +81,7 @@ def test_top1_proposition_records_cover_all_cohorts_and_preserve_proposition_mas
 def test_analysis_export_summary_round_trip(tmp_path: Path):
     summary = AnalysisExportSummary(
         run_id="RUN-1",
-        protocol_id="plan_a_v1",
+        protocol_id="plan_a_next_v0_1_analysis",
         analysis_path="sample_analysis_records.csv",
         checkpoint_path="checkpoint_best.pt",
         manifest_snapshot_path="plan_a_manifest_snapshot.jsonl",
@@ -91,7 +101,12 @@ def test_matched_summary_rejects_invalid_scalar_name():
     batch_input = build_synthetic_batch()
     model = FRCNetModel(num_classes=10)
     model_output = model(batch_input.image)
-    sample_records = build_sample_analysis_records(model_output, batch_input, run_id="RUN-1", protocol_id="plan_a_v1")
+    sample_records = build_sample_analysis_records(
+        model_output,
+        batch_input,
+        run_id="RUN-1",
+        protocol_id="plan_a_next_v0_1_analysis",
+    )
     duplicated_records = [replace(record) for record in sample_records] + [replace(record) for record in sample_records]
     for index, record in enumerate(duplicated_records):
         record.sample_id = f"{record.sample_id}-{index}"
@@ -104,7 +119,12 @@ def test_matched_summary_rejects_label_aware_primary_scalar():
     batch_input = build_synthetic_batch()
     model = FRCNetModel(num_classes=10)
     model_output = model(batch_input.image)
-    sample_records = build_sample_analysis_records(model_output, batch_input, run_id="RUN-1", protocol_id="plan_a_v1")
+    sample_records = build_sample_analysis_records(
+        model_output,
+        batch_input,
+        run_id="RUN-1",
+        protocol_id="plan_a_next_v0_1_analysis",
+    )
     duplicated_records = [replace(record) for record in sample_records] + [replace(record) for record in sample_records]
     for index, record in enumerate(duplicated_records):
         record.sample_id = f"{record.sample_id}-{index}"

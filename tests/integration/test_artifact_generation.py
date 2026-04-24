@@ -25,7 +25,12 @@ def _build_records():
     batch_input = build_synthetic_batch()
     model = FRCNetModel(num_classes=10)
     model_output = model(batch_input.image)
-    records = build_sample_analysis_records(model_output, batch_input, run_id="RUN-1", protocol_id="plan_a_v1")
+    records = build_sample_analysis_records(
+        model_output,
+        batch_input,
+        run_id="RUN-1",
+        protocol_id="plan_a_next_v0_1_analysis",
+    )
     duplicated = [replace(record) for record in records] + [replace(record) for record in records]
     for index, record in enumerate(duplicated):
         record.sample_id = f"{record.sample_id}-{index}"
@@ -69,8 +74,8 @@ def test_matched_summary_and_experiment_record(tmp_path: Path):
     artifact_paths = {
         "geometry_scatter": str(tmp_path / "geometry_scatter.png"),
         "cohort_counts": str(tmp_path / "cohort_counts.png"),
-        "tau_cohort_boxplot": str(tmp_path / "tau_cohort_boxplot.png"),
-        "tau_roc_curve": str(tmp_path / "tau_roc_curve.png"),
+        "proposition_tau_cohort_boxplot": str(tmp_path / "proposition_tau_cohort_boxplot.png"),
+        "proposition_tau_roc_curve": str(tmp_path / "proposition_tau_roc_curve.png"),
         "matched_ambiguous_vs_ood_table": str(matched_path),
         "proposition_diagnostic_table": str(tmp_path / "proposition.csv"),
     }
@@ -79,7 +84,7 @@ def test_matched_summary_and_experiment_record(tmp_path: Path):
         output_path=tmp_path / "experiment_record.md",
         model_family="frcnet_explicit_unknown",
         run_id="RUN-1",
-        protocol_id="plan_a_v1",
+        protocol_id="plan_a_next_v0_1_analysis",
         config_snapshot_paths={
             "protocol_config_snapshot": str(tmp_path / "protocol_config_snapshot.yaml"),
             "eval_config_snapshot": str(tmp_path / "eval_config_snapshot.yaml"),
@@ -95,8 +100,8 @@ def test_matched_summary_and_experiment_record(tmp_path: Path):
         sidecar_resolution_mode="analysis_summary_explicit",
         integrity_overrides=("missing_checkpoint",),
         source_run_ids=("RUN-1",),
-        source_protocol_ids=("plan_a_v1",),
-        resolved_eval_config={"primary_scalar": "completion_score_beta_0_1", "random_state": 7},
+        source_protocol_ids=("plan_a_next_v0_1_analysis",),
+        resolved_eval_config={"primary_scalar": "top1_completion_beta_0_1", "random_state": 7},
         proposition_diagnostic_scalar_name="proposition_truth_ratio",
         proposition_diagnostic_table_path=str(tmp_path / "proposition.csv"),
         proposition_tau_roc_curve_path=str(tmp_path / "tau_roc_curve.png"),

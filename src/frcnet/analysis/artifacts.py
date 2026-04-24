@@ -37,14 +37,14 @@ def write_geometry_scatter(records: list[SampleAnalysisRecord], output_path: str
         cohort_records = [record for record in records if record.cohort_name == cohort_name]
         plt.scatter(
             [record.resolution_ratio for record in cohort_records],
-            [record.content_entropy for record in cohort_records],
+            [record.state_content_entropy for record in cohort_records],
             label=cohort_name,
             s=18,
             alpha=0.7,
             color=COHORT_COLORS.get(cohort_name, "#333333"),
         )
     plt.xlabel("resolution_ratio")
-    plt.ylabel("content_entropy")
+    plt.ylabel("state_content_entropy")
     plt.title("FRCNet Geometry Scatter")
     plt.legend()
     plt.tight_layout()
@@ -59,14 +59,14 @@ def write_geometry_hexbin(records: list[SampleAnalysisRecord], output_path: str 
     plt.figure(figsize=(8, 6))
     plt.hexbin(
         [record.resolution_ratio for record in records],
-        [record.content_entropy for record in records],
+        [record.state_content_entropy for record in records],
         gridsize=24,
         cmap="viridis",
         mincnt=1,
     )
     plt.colorbar(label="count")
     plt.xlabel("resolution_ratio")
-    plt.ylabel("content_entropy")
+    plt.ylabel("state_content_entropy")
     plt.title("FRCNet Geometry Hexbin")
     plt.tight_layout()
     plt.savefig(output, dpi=dpi)
@@ -83,7 +83,7 @@ def _build_cohort_occupancy_histograms(
 ) -> tuple[dict[str, np.ndarray], np.ndarray, np.ndarray]:
     if resolution_bin_count <= 0 or entropy_bin_count <= 0:
         raise ValueError("resolution_bin_count and entropy_bin_count must be positive.")
-    max_entropy = max((record.content_entropy for record in records), default=0.0)
+    max_entropy = max((record.state_content_entropy for record in records), default=0.0)
     entropy_upper = max(max_entropy, 1e-6)
     resolution_edges = np.linspace(0.0, 1.0, resolution_bin_count + 1, dtype=np.float64)
     entropy_edges = np.linspace(0.0, entropy_upper, entropy_bin_count + 1, dtype=np.float64)
@@ -93,7 +93,7 @@ def _build_cohort_occupancy_histograms(
         cohort_records = [record for record in records if record.cohort_name == cohort_name]
         if cohort_records:
             histogram, _, _ = np.histogram2d(
-                [record.content_entropy for record in cohort_records],
+                [record.state_content_entropy for record in cohort_records],
                 [record.resolution_ratio for record in cohort_records],
                 bins=(entropy_edges, resolution_edges),
             )
@@ -127,7 +127,7 @@ def write_cohort_occupancy(records: list[SampleAnalysisRecord], output_path: str
         )
         axis.set_title(cohort_name)
         axis.set_xlabel("resolution_ratio")
-        axis.set_ylabel("content_entropy")
+        axis.set_ylabel("state_content_entropy")
     for axis in flattened_axes[len(COHORT_PANEL_ORDER) :]:
         axis.axis("off")
     if image is not None:

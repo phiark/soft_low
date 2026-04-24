@@ -1764,6 +1764,7 @@ def generate_plan_a_artifact_bundle(
     analysis_config = {
         "figure_dpi": 200,
         "cohort_counts_name": "cohort_counts.png",
+        "proposition_tau_cohort_boxplot_name": "proposition_tau_cohort_boxplot.png",
         "proposition_diagnostic_table_name": "proposition_diagnostic_table.csv",
         "proposition_tau_roc_curve_name": "proposition_tau_roc_curve.png",
         "balanced_vs_theory_checkpoint_table_name": "balanced_vs_theory_checkpoint_table.csv",
@@ -1892,9 +1893,13 @@ def generate_plan_a_artifact_bundle(
         output_root / analysis_config.get("cohort_counts_name", "cohort_counts.png"),
         dpi=figure_dpi,
     )
+    tau_boxplot_name = analysis_config.get(
+        "proposition_tau_cohort_boxplot_name",
+        analysis_config.get("tau_cohort_boxplot_name", "proposition_tau_cohort_boxplot.png"),
+    )
     tau_boxplot_path = write_tau_cohort_boxplot(
         sample_analysis_records,
-        output_root / analysis_config.get("tau_cohort_boxplot_name", "tau_cohort_boxplot.png"),
+        output_root / tau_boxplot_name,
         dpi=figure_dpi,
     )
     summary_path = write_cohort_summary_table(
@@ -1980,7 +1985,7 @@ def generate_plan_a_artifact_bundle(
         "geometry_hexbin": str(hexbin_path),
         "cohort_occupancy": str(occupancy_path),
         "cohort_counts": str(cohort_counts_path),
-        "tau_cohort_boxplot": str(tau_boxplot_path),
+        "proposition_tau_cohort_boxplot": str(tau_boxplot_path),
         "cohort_summary_table": str(summary_path),
         "matched_ambiguous_vs_ood_table": str(matched_path),
         "completion_scan_table": str(completion_scan_path),

@@ -24,5 +24,6 @@
 
 - `proposition_truth_ratio` 不再允许作为主 benchmark scalar
 - `content_entropy` 与 `completion_score_beta_*` 保留为 legacy alias
+- `v0.3*` study/debug 协议不再属于本分支 active surface
 - v0.1 的成功标准是评估语义可复核, 不是重新提升 FRCNet 训练指标
 - 后续 baseline 和 decision benchmark 必须建立在此语义层上

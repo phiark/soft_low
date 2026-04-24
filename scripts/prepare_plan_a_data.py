@@ -38,8 +38,8 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     protocol_configs = args.protocol_configs or [
-        "configs/protocol/plan_a_v1_train.yaml",
-        "configs/protocol/plan_a_v1.yaml",
+        "configs/protocol/plan_a_next_v0_1_train.yaml",
+        "configs/protocol/plan_a_next_v0_1_analysis.yaml",
     ]
     report = prepare_plan_a_datasets(
         protocol_configs,

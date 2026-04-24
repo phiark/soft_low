@@ -17,7 +17,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build a Plan A manifest snapshot.")
     parser.add_argument(
         "--protocol-config",
-        default="configs/protocol/plan_a_v1.yaml",
+        default="configs/protocol/plan_a_next_v0_1_analysis.yaml",
         help="Path to the protocol YAML file.",
     )
     parser.add_argument(

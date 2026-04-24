@@ -1,9 +1,9 @@
 protocol:
-  protocol_id: plan_a_v0_3debug_eval
+  protocol_id: plan_a_next_v0_1_analysis
   seed: 7
-  split_name: validation
-  output_root: artifacts/reports/generated
+  split_name: analysis
   num_classes: 10
+  output_root: artifacts/reports/generated
   datasets:
     cifar10:
       root: data/cifar10
@@ -14,21 +14,19 @@ protocol:
       split: test
       download: false
   analysis:
-    easy_id_per_class: 200
-    hard_id_per_class: 200
-    ambiguous_per_pair: 150
-    ood_count: 1000
-    unknown_supervision_count: 1000
+    easy_id_per_class: 4
+    hard_id_per_class: 4
+    ambiguous_per_pair: 4
+    ood_count: 12
+    unknown_supervision_count: 12
     dataloader:
-      batch_size: 128
-      drop_last: false
+      batch_size: 8
+      drop_last: true
       num_workers: 0
   ambiguous:
-    recipes:
-      - mixup
+    recipe: mixup
     alpha_min: 0.35
     alpha_max: 0.65
-    occlusion_fraction: 0.35
     class_pairs:
       - [3, 5]
       - [4, 7]

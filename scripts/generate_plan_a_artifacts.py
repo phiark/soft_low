@@ -17,9 +17,9 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate Plan A paper-facing artifacts.")
     parser.add_argument("--analysis-path", required=True)
     parser.add_argument("--analysis-summary-path", default=None)
-    parser.add_argument("--protocol-config", default="configs/protocol/plan_a_v1.yaml")
-    parser.add_argument("--analysis-config", default="configs/analysis/plan_a_artifacts.yaml")
-    parser.add_argument("--eval-config", default="configs/eval/plan_a_matched_ambiguous_vs_ood.yaml")
+    parser.add_argument("--protocol-config", default="configs/protocol/plan_a_next_v0_1_analysis.yaml")
+    parser.add_argument("--analysis-config", default="configs/analysis/plan_a_next_v0_1_artifacts.yaml")
+    parser.add_argument("--eval-config", default="configs/eval/plan_a_next_v0_1_matched_manifest.yaml")
     parser.add_argument(
         "--allow-integrity-override",
         action="store_true",

@@ -49,7 +49,7 @@ class FakeLabelsDataset:
 
 def build_protocol_config() -> dict:
     return {
-        "protocol_id": "plan_a_v1",
+        "protocol_id": "plan_a_next_v0_1_analysis",
         "seed": 7,
         "split_name": "analysis",
         "num_classes": 10,

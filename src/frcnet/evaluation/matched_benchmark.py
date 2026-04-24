@@ -172,11 +172,21 @@ class MatchedBenchmarkSummary:
 
 
 def _build_pair_features(records: list[SampleAnalysisRecord], pair_name: str) -> np.ndarray:
-    if pair_name in {"resolution_ratio__content_entropy", "resolution_ratio__state_content_entropy"}:
+    if pair_name == "resolution_ratio__content_entropy":
         return np.array([[record.resolution_ratio, record.content_entropy] for record in records], dtype=np.float64)
-    if pair_name in {"resolution_ratio__resolution_weighted_content_entropy", DEFAULT_WEIGHTED_PAIR_NAME}:
+    if pair_name == "resolution_ratio__state_content_entropy":
+        return np.array(
+            [[record.resolution_ratio, record.state_content_entropy] for record in records],
+            dtype=np.float64,
+        )
+    if pair_name == "resolution_ratio__resolution_weighted_content_entropy":
         return np.array(
             [[record.resolution_ratio, record.resolution_weighted_content_entropy] for record in records],
+            dtype=np.float64,
+        )
+    if pair_name == DEFAULT_WEIGHTED_PAIR_NAME:
+        return np.array(
+            [[record.resolution_ratio, record.state_weighted_content_entropy] for record in records],
             dtype=np.float64,
         )
     raise ValueError(f"Unsupported primary_pair: {pair_name}. Supported values: {sorted(SUPPORTED_PAIR_FEATURES)}")
