@@ -3,7 +3,7 @@
 - document_id: docs_index
 - status: baselined
 - owner: frcnet_project
-- last_updated: 2026-04-27
+- last_updated: 2026-05-11
 - standard_alignment: iso_8601, iso_iec_ieee_15289, iso_iec_11179_inspired
 
 ## 1. 目的
@@ -29,27 +29,32 @@
 
 - [系统需求规格说明](requirements/system_requirements_specification.md)
 
-### 3.3 Architecture
+### 3.3 Current Architecture Baseline
 
 - [架构说明](architecture/architecture_description.md)
 - [方案 A 论文连接说明](architecture/plan_a_paper_linkage.md)
+- [Plan A Next v0.6C near-OOD split repair protocol](architecture/plan_a_next_v0_6c_near_ood_split_repair_protocol.md)
+- [运行环境矩阵](architecture/runtime_environment_matrix.md)
+- [项目结构说明](architecture/project_structure.md)
+
+### 3.4 Historical Protocols
+
+以下协议仅保留追溯价值。除非复现实验记录, 不作为新训练的默认入口。
+
 - [Plan A Next v0.2 协议](architecture/plan_a_next_v0_2_protocol.md)
+- [方案 A v0.3 研究协议](architecture/plan_a_v0_3_protocol.md)
+- [方案 A v0.3debug 理论对齐协议](architecture/plan_a_v0_3debug_protocol.md)
+- [方案 A v0.3debug R2 协议](architecture/plan_a_v0_3debug_r2_protocol.md)
 - [Plan A Next v0.4 semantic repair plan](architecture/plan_a_next_v0_4_semantic_repair_plan.md)
 - [Plan A Next v0.5 evidence repair protocol](architecture/plan_a_next_v0_5_evidence_repair_protocol.md)
 - [Plan A Next v0.6 multisource LOSO protocol](architecture/plan_a_next_v0_6_multisource_loso_protocol.md)
 - [Plan A Next v0.6B source-invariant protocol](architecture/plan_a_next_v0_6b_source_invariant_protocol.md)
-- [Plan A Next v0.6C near-OOD split repair protocol](architecture/plan_a_next_v0_6c_near_ood_split_repair_protocol.md)
-- [方案 A v0.3 研究协议](architecture/plan_a_v0_3_protocol.md)
-- [方案 A v0.3debug 理论对齐协议](architecture/plan_a_v0_3debug_protocol.md)
-- [方案 A v0.3debug R2 协议](architecture/plan_a_v0_3debug_r2_protocol.md)
-- [运行环境矩阵](architecture/runtime_environment_matrix.md)
-- [项目结构说明](architecture/project_structure.md)
 
-### 3.4 Verification
+### 3.5 Verification
 
 - [验证与确认计划](verification/verification_and_validation_plan.md)
 
-### 3.5 Records
+### 3.6 Records
 
 - [证据与追踪策略](records/evidence_and_traceability_policy.md)
 - [ADR-0001 文档驱动基线](../records/decisions/adr_0001_document_driven_baseline.md)
@@ -64,15 +69,16 @@
 - [ADR-0010 Plan A Next v0.6C near-OOD split repair](../records/decisions/adr_0010_plan_a_next_v0_6c_near_ood_split_repair.md)
 - [2026-04-24 Plan A Next v0.2 issue ledger](../records/reviews/2026-04-24_review_plan_a_next_v0_2_issue_ledger.md)
 - [2026-04-25 Literature and project alignment review](../records/reviews/2026-04-25_review_literature_project_alignment.md)
-- [2026-04-25 V4.0 strict freeze scope control](../records/reviews/2026-04-25_review_v0_4_strict_freeze_scope_control.md)
-- [2026-04-25 V4.0 strict freeze local proof](../records/reviews/2026-04-25_review_v0_4_strict_freeze_local_proof.md)
+- [2026-04-25 V0.4 strict freeze scope control](../records/reviews/2026-04-25_review_v0_4_strict_freeze_scope_control.md)
+- [2026-04-25 V0.4 strict freeze local proof](../records/reviews/2026-04-25_review_v0_4_strict_freeze_local_proof.md)
 - [2026-04-26 V0.5 evidence repair scope](../records/reviews/2026-04-26_review_v0_5_evidence_repair_scope.md)
 - [2026-04-26 V0.6 multisource LOSO scope](../records/reviews/2026-04-26_review_v0_6_multisource_loso_scope.md)
 - [2026-04-26 V0.6B source-invariant scope](../records/reviews/2026-04-26_review_v0_6b_source_invariant_scope.md)
 - [2026-04-26 V0.6C near-OOD split repair scope](../records/reviews/2026-04-26_review_v0_6c_near_ood_split_repair_scope.md)
 - [2026-04-27 V0.6C archive closure](../records/reviews/2026-04-27_review_v0_6c_archive_closure.md)
+- [2026-05-02 model positioning and future](../records/reviews/2026-05-02_review_model_positioning_and_future.md)
 
-### 3.6 Templates
+### 3.7 Templates
 
 - [ADR 模板](templates/architecture_decision_record_template.md)
 - [实验记录模板](templates/experiment_record_template.md)

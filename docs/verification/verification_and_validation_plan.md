@@ -3,7 +3,7 @@
 - document_id: ver_verification_and_validation_plan
 - status: baselined
 - owner: frcnet_project
-- last_updated: 2026-04-27
+- last_updated: 2026-05-11
 
 ## 1. 目标
 
@@ -155,22 +155,23 @@
 | `REQ-SCI-006` | `VER-SCI-002`, `VER-SCI-005` |
 | `REQ-SCI-007` | `VER-SCI-004`, `VER-SCI-005` |
 
-## 4. 进入实现前的门槛
+## 4. 文档到实现的门槛
 
-以下项目满足后, 才认为“开发前初始化完成”:
+封存维护或新版本开发前, 必须先满足以下项目:
 
-1. 命名标准已基线化
-2. 架构边界已基线化
+1. 命名标准与目录约束已更新
+2. 架构边界或新版本计划已明确
 3. 需求项和验证项已建立映射
-4. ADR-0001 已确认
-5. 目录树和包路径已落地
+4. 相关 ADR、review 或 archive record 已可追溯
+5. 运行输出路径不会污染普通提交
 
-## 5. 首轮测试建议
+## 5. 当前维护测试建议
 
-初始化后的第一批测试建议按以下顺序实现:
+文档、配置或工作流维护后, 建议按以下顺序验证:
 
 1. 输出质量守恒测试
 2. unknown 导出规则测试
-3. content entropy 数值测试
+3. `state_content_entropy` 数值测试
 4. batch/output contract 测试
-5. 小样本 end-to-end smoke test
+5. provenance 与 stale-resume contract 测试
+6. artifact hygiene 检查

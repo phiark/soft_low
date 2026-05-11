@@ -76,6 +76,7 @@ Generated checkpoints, study outputs, logs, and caches are ignored by default. N
 ## Primary Documents
 
 - [Document Index](docs/index.md)
+- [Repository Guidelines](AGENTS.md)
 - [Project Archive Status](docs/governance/project_archive_status.md)
 - [System Requirements Specification](docs/requirements/system_requirements_specification.md)
 - [Architecture Description](docs/architecture/architecture_description.md)

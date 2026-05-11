@@ -3,7 +3,7 @@
 - document_id: req_system_requirements_specification
 - status: baselined
 - owner: frcnet_project
-- last_updated: 2026-04-26
+- last_updated: 2026-05-11
 
 ## 1. 范围
 
@@ -115,8 +115,8 @@ FRCNet 是一个面向研究验证的显式未知网络。它的核心目标不�
 - `REQ-NF-001`: 代码应保持模块职责清晰, data / models / training / evaluation / analysis 分离
 - `REQ-NF-002`: 所有实验记录必须可复现到配置级别
 - `REQ-NF-003`: 分析输出应支持直接写入论文图表与表格流程
-- `REQ-NF-004`: 小型首轮实验应能在单张 12-24GB GPU 上完成
-- `REQ-NF-005`: 初始化阶段优先保证可观测性和可反驳性, 再追求指标最优
+- `REQ-NF-004`: 小型维护或回归实验应能在单张 12-24GB GPU 上完成
+- `REQ-NF-005`: 封存维护阶段优先保证可观测性、可反驳性和证据链完整性, 不以指标最优为默认目标
 
 ## 5. 成功判据
 
@@ -132,8 +132,8 @@ FRCNet 是一个面向研究验证的显式未知网络。它的核心目标不�
 - `REQ-SCI-010`: `plan_a_next_v0_6b` 必须保持 CIFAR-100 final-only, 并将 TinyImageNet 标记为 seen near-OOD pressure, 不得混称 unseen source evidence
 - `REQ-SCI-011`: `plan_a_next_v0_6c` 只能声明 unseen CIFAR100 classes evidence, 不得声明 unseen CIFAR100 source evidence
 
-## 6. 关键开放问题
+## 6. 已处理或延期问题
 
-- `OPEN-001`: 首轮 backbone 固定为 ResNet-18 还是保留 ConvNeXt-Tiny 分支
-- `OPEN-002`: 歧义样本构造优先级如何在 MixUp、叠加、遮挡之间排序
-- `OPEN-003`: v0.2 之后是否把 decision-regret 实验纳入主协议
+- `OPEN-001`: 当前封存基线固定为 ResNet-18; 新 backbone 需要新版本计划
+- `OPEN-002`: 歧义样本构造不在 V0.6C 封存后继续扩展; 新 recipe 需要新协议
+- `OPEN-003`: decision-regret 实验延期, 不属于当前 archived baseline 的主协议

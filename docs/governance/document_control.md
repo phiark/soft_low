@@ -3,7 +3,7 @@
 - document_id: gov_document_control
 - status: baselined
 - owner: frcnet_project
-- last_updated: 2026-04-27
+- last_updated: 2026-05-11
 - standard_alignment: iso_8601, iso_iec_ieee_15289
 
 ## 1. 采用标准与假设
@@ -71,7 +71,7 @@
 
 ## 6. 审批与基线
 
-初始化阶段采用单责任人模式:
+当前封存维护阶段采用单责任人模式:
 
 - author: 当前项目维护者
 - reviewer: 待指派

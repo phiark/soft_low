@@ -3,7 +3,7 @@
 - document_id: gov_naming_identifier_standard
 - status: baselined
 - owner: frcnet_project
-- last_updated: 2026-04-22
+- last_updated: 2026-05-11
 - standard_alignment: iso_8601, iso_iec_11179_inspired
 
 ## 1. 目标
@@ -19,6 +19,7 @@
 - 文件名统一使用 `lowercase_snake_case`
 - 不在仓库文件名中使用空格、中文、临时版本尾缀如 `final2`, `new`, `latest`
 - 日期前缀使用 ISO 8601, 例如 `2026-04-18_...` 或 `20260418T093000+0800`
+- 新 study 或 artifact bundle 使用 `YYYY-MM-DD_vX.Y_slug`, 例如 `2026-05-11_v0.7_near_ood_repair`
 
 ### 2.2 Python 标识符
 
@@ -105,6 +106,14 @@
 - `EXP-2026-04-18-01`
 - `RUN-20260418T093000+0800-seed007`
 
+### 5.4 Artifact And Study Roots
+
+- 当前规范路径是 `artifacts/studies/`, 不是 `artifact/`, `study/`, `studie/`, 或 `stuidie/`
+- 新 study 根目录必须同时包含日期、版本和语义短名: `artifacts/studies/YYYY-MM-DD_vX.Y_slug/`
+- 历史目录名可保留用于追溯, 但不得作为新目录模板
+- 运行内 seed 目录使用 `seedNNN`, 例如 `seed007`
+- 配置文件继续使用协议名, 例如 `plan_a_next_v0_6c_near_ood_cifar100_class_holdout.yaml`
+
 ## 6. 禁止项
 
 - 不把 `unknown_mass` 命名为 `uncertainty`, 因为含义过宽
@@ -113,3 +122,4 @@
 - 不在 v0.2 新产物里继续输出 `content_entropy` / `completion_score_beta_*` 作为 canonical 字段; 它们只能作为 legacy alias 被读取
 - 不把 `completion_score` 当作模型唯一主输出
 - 不在不同文件中混用 `vacuity`, `unknown_mass`, `unresolved_mass` 指向同一对象而不声明
+- 不再新增 `RUN-*` 或 `KYUC-*` 作为 study 根目录名; 这些只算历史兼容名称

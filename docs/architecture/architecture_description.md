@@ -3,7 +3,7 @@
 - document_id: arch_architecture_description
 - status: baselined
 - owner: frcnet_project
-- last_updated: 2026-04-19
+- last_updated: 2026-05-11
 - standard_alignment: iso_ieee_42010_informed, iso_iec_ieee_15289
 
 ## 1. 架构目标
@@ -14,8 +14,9 @@
 - `content_distribution`
 - `class_mass`
 - `unknown_mass`
-- `content_entropy`
-- `completion_score`
+- `state_content_entropy`
+- `state_weighted_content_entropy`
+- `top1_completion_beta_*`
 
 ## 2. 上下文视图
 
@@ -214,15 +215,16 @@ analysis 阶段必须额外生成 `analysis_summary.json`, 作为 report 阶段�
 - `ARCH-006`: report 阶段必须先完成 bundle integrity 校验, 再写 `experiment_record.md`
 - `ARCH-007`: analysis/report 间的 sidecar 解析必须优先使用规范 `analysis_summary.json`, 不得默认依赖 sibling 猜测
 
-## 6. 初始化阶段的默认技术选择
+## 6. 当前技术基线
 
 - 默认 backbone: `ResNet-18`
 - 默认主包路径: `src/frcnet/`
-- 默认配置组织: `configs/model`, `configs/data`, `configs/train`, `configs/eval`, `configs/analysis`
-- 默认记录组织: `records/decisions`, `records/experiments`, `records/reviews`
+- 默认配置组织: `configs/model`, `configs/data`, `configs/protocol`, `configs/train`, `configs/eval`, `configs/analysis`, `configs/study`
+- 默认记录组织: `records/decisions`, `records/reviews`
+- 默认工作流入口: `src/frcnet/workflows/plan_a.py` 与 `src/frcnet/workflows/study.py`
 
-## 7. 待确认架构决策
+## 7. 已收口架构决策
 
-- 是否在首轮就引入可选的 `weighted_pair = resolution_ratio * content_entropy`
-- 是否把 `top1 correctness proposition` 作为评估层专用对象, 而不是训练时显式对象
-- 是否需要在初始化阶段就固定 analysis schema 为 parquet/csv 双输出
+- 主 paper-facing pair 使用 `(resolution_ratio, state_content_entropy)`, weighted pair 保留为 secondary/ablation 输出
+- `top1 correctness proposition` 属于评估与诊断层对象, 不进入训练主监督
+- analysis sidecar 使用 `analysis_summary.json`; CSV 是当前样本级记录交换格式

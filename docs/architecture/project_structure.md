@@ -3,7 +3,7 @@
 - document_id: arch_project_structure
 - status: baselined
 - owner: frcnet_project
-- last_updated: 2026-04-27
+- last_updated: 2026-05-11
 
 ## 1. 设计原则
 
@@ -30,7 +30,6 @@ HardMin/
 │   └── templates/
 ├── records/
 │   ├── decisions/
-│   ├── experiments/
 │   └── reviews/
 ├── src/
 │   └── frcnet/
@@ -40,6 +39,7 @@ HardMin/
 │       ├── evaluation/
 │       ├── analysis/
 │       ├── maintenance/
+│       ├── workflows/
 │       └── utils/
 ├── configs/
 │   ├── model/
@@ -59,6 +59,7 @@ HardMin/
 │   ├── tables/
 │   ├── reports/
 │   ├── checkpoints/
+│   ├── studies/
 │   └── logs/
 └── notebooks/
 ```
@@ -71,7 +72,9 @@ HardMin/
 
 ### 3.2 `records/`
 
-存放 ADR、实验记录、评审记录。这里不改写规范, 只记录决策和结果。
+存放 ADR、评审记录和 compact evidence record。这里不改写规范, 只记录决策和结果。
+
+`records/experiments/` 属于历史/生成性实验记录路径, 当前不作为常规文档分类新增目录。需要实验记录时, 优先由 study/report 工作流生成到 artifact bundle, 再把 compact review 或 archive record 放入 `records/reviews/`。
 
 ### 3.3 `src/frcnet/`
 
@@ -97,19 +100,11 @@ HardMin/
 
 封存状态下, 普通提交不得包含 generated artifact tree、checkpoint、大型 CSV 或运行缓存。checkpoint 保留规则见 `docs/governance/project_archive_status.md`。
 
+新的 study 根目录统一放在 `artifacts/studies/YYYY-MM-DD_vX.Y_slug/`。历史目录如 `plan_a_v0_3_main`、`RUN-*` 或 `KYUC-*` 只为追溯保留, 不作为新命名模板。
+
 ## 4. 文件树约束
 
 - 目录树优先表达职责, 不表达临时阶段
-- 不建立 `misc`, `temp`, `other`, `new_files` 之类无语义目录
+- 不建立 `misc`, `temp`, `other`, `new_files`, `artifact`, `stuidie` 之类无语义或拼写错误目录
 - 训练、评估、分析禁止混放在同一模块
 - notebook 只用于探索, 结论要沉淀回 `docs/` 或 `records/`
-
-## 5. 推荐后续补充
-
-初始化之后, 建议下一批文件优先落在:
-
-1. `configs/model/frcnet_resnet18_base.yaml`
-2. `configs/data/cifar10_svhn_small.yaml`
-3. `src/frcnet/models/frcnet_model.py`
-4. `src/frcnet/training/losses.py`
-5. `tests/contract/test_output_contracts.py`
