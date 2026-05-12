@@ -30,6 +30,12 @@ Generated study roots belong under `artifacts/studies/`. New roots must use `YYY
 
 Add or update focused tests when documentation, config, or workflow contracts change. Prefer contract tests for schemas and provenance, integration tests for workflow assembly, and unit tests for math invariants. A normal maintenance check should not stage generated `artifacts/` files.
 
+## Agent Delegation Guidelines
+
+Use `docs/governance/agent_role_contracts.md` as the persistent contract for concept explanation, research, paper-sync, development, baseline, workflow, and review agents. Runtime agents are temporary; their authority comes only from the assigned role, write set, and validation requirement.
+
+The controller must assign non-overlapping write ownership before any development agent edits files. Read-only concept, research, and review agents may inspect repository files and produce findings, but they must not edit files, run new training, or turn diagnostics into manuscript evidence.
+
 ## Commit & Pull Request Guidelines
 
 Keep commits scoped by document, config, code, or evidence category. PRs should state the baseline document, changed config paths, validation command, and whether the change is maintenance-only or starts a new version plan.

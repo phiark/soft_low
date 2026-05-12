@@ -53,8 +53,11 @@ from frcnet.evaluation import (
     read_sample_analysis_records,
     read_top1_proposition_records,
     run_inference_export,
+    summarize_decision_regret,
     summarize_matched_ambiguous_vs_ood,
     write_analysis_export_summary,
+    write_decision_regret_policy_summaries,
+    write_decision_regret_rows,
     write_matched_benchmark_summary,
     write_proposition_view_records,
     write_sample_analysis_records,
@@ -246,6 +249,7 @@ def _resolve_eval_config(eval_config_path: str | Path | None) -> dict[str, str |
             "matched_manifest_path": "",
             "require_matched_manifest": False,
             "benchmark_slices": (),
+            "decision_regret": {"enabled": False},
             "test_size": 0.3,
             "random_state": 7,
         }
@@ -280,6 +284,7 @@ def _resolve_eval_config(eval_config_path: str | Path | None) -> dict[str, str |
         "matched_manifest_path": str(eval_config.get("matched_manifest_path", "")),
         "require_matched_manifest": bool(eval_config.get("require_matched_manifest", False)),
         "benchmark_slices": tuple(dict(value) for value in eval_config.get("benchmark_slices", ())),
+        "decision_regret": dict(eval_config.get("decision_regret", {"enabled": False})),
         "test_size": float(eval_config.get("test_size", 0.3)),
         "random_state": int(eval_config.get("random_state", 7)),
     }
@@ -2346,6 +2351,36 @@ def generate_plan_a_artifact_bundle(
         random_state=int(resolved_eval_config["random_state"]),
         matched_manifest_records=matched_manifest_records,
     )
+    decision_regret_config = dict(resolved_eval_config.get("decision_regret", {}))
+    decision_regret_path: Path | None = None
+    decision_regret_row_path: Path | None = None
+    if bool(decision_regret_config.get("enabled", False)):
+        decision_policy_names = tuple(
+            str(value) for value in decision_regret_config.get("policies", ())
+        )
+        decision_summary = summarize_decision_regret(
+            sample_analysis_records,
+            policy_names=decision_policy_names or None,
+            test_size=float(resolved_eval_config["test_size"]),
+            random_state=int(resolved_eval_config["random_state"]),
+            matched_manifest_records=matched_manifest_records,
+        )
+        decision_regret_path = write_decision_regret_policy_summaries(
+            decision_summary,
+            output_root
+            / analysis_config.get(
+                "decision_regret_table_name",
+                decision_regret_config.get("table_name", "decision_regret_table.csv"),
+            ),
+        )
+        decision_regret_row_path = write_decision_regret_rows(
+            decision_summary.rows,
+            output_root
+            / analysis_config.get(
+                "decision_regret_row_table_name",
+                decision_regret_config.get("row_table_name", "decision_regret_records.csv"),
+            ),
+        )
     benchmark_artifact_paths: dict[str, str] = {}
     for benchmark_slice in tuple(resolved_eval_config.get("benchmark_slices", ())):
         slice_config = _benchmark_slice_config(resolved_eval_config, benchmark_slice)
@@ -2380,6 +2415,36 @@ def generate_plan_a_artifact_bundle(
         )
         benchmark_artifact_paths[f"{artifact_stem}_matched_table"] = str(slice_matched_path)
         benchmark_artifact_paths[f"{artifact_stem}_completion_scan_table"] = str(slice_completion_path)
+        if bool(decision_regret_config.get("enabled", False)):
+            source_slice_table_suffix = decision_regret_config.get(
+                "source_slice_table_suffix",
+                "decision_regret_table.csv",
+            )
+            source_slice_row_table_suffix = decision_regret_config.get(
+                "source_slice_row_table_suffix",
+                "decision_regret_records.csv",
+            )
+            slice_decision_summary = summarize_decision_regret(
+                sample_analysis_records,
+                policy_names=decision_policy_names or None,
+                test_size=float(slice_config["test_size"]),
+                random_state=int(slice_config["random_state"]),
+                matched_manifest_records=slice_manifest_records,
+            )
+            slice_decision_path = write_decision_regret_policy_summaries(
+                slice_decision_summary,
+                output_root / f"{artifact_stem}_{source_slice_table_suffix}",
+            )
+            slice_decision_row_path = write_decision_regret_rows(
+                slice_decision_summary.rows,
+                output_root / f"{artifact_stem}_{source_slice_row_table_suffix}",
+            )
+            benchmark_artifact_paths[f"{artifact_stem}_decision_regret_table"] = str(
+                slice_decision_path
+            )
+            benchmark_artifact_paths[f"{artifact_stem}_decision_regret_records"] = str(
+                slice_decision_row_path
+            )
     proposition_diagnostic_table_path: Path | None = None
     proposition_tau_roc_curve_path: Path | None = None
     if bool(resolved_eval_config["emit_proposition_diagnostics"]):
@@ -2433,6 +2498,10 @@ def generate_plan_a_artifact_bundle(
         "completion_scan_table": str(completion_scan_path),
         **benchmark_artifact_paths,
     }
+    if decision_regret_path is not None:
+        artifact_paths["decision_regret_table"] = str(decision_regret_path)
+    if decision_regret_row_path is not None:
+        artifact_paths["decision_regret_records"] = str(decision_regret_row_path)
     if proposition_diagnostic_table_path is not None:
         artifact_paths["proposition_diagnostic_table"] = str(proposition_diagnostic_table_path)
     if proposition_tau_roc_curve_path is not None:

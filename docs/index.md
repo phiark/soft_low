@@ -3,7 +3,7 @@
 - document_id: docs_index
 - status: baselined
 - owner: frcnet_project
-- last_updated: 2026-05-11
+- last_updated: 2026-05-12
 - standard_alignment: iso_8601, iso_iec_ieee_15289, iso_iec_11179_inspired
 
 ## 1. 目的
@@ -22,6 +22,7 @@
 ### 3.1 Governance
 
 - [文档控制](governance/document_control.md)
+- [Agent role contracts](governance/agent_role_contracts.md)
 - [命名与标识标准](governance/naming_and_identifier_standard.md)
 - [项目封存状态](governance/project_archive_status.md)
 
@@ -34,6 +35,7 @@
 - [架构说明](architecture/architecture_description.md)
 - [方案 A 论文连接说明](architecture/plan_a_paper_linkage.md)
 - [Plan A Next v0.6C near-OOD split repair protocol](architecture/plan_a_next_v0_6c_near_ood_split_repair_protocol.md)
+- [Plan A V1.0 decision-regret paper protocol](architecture/plan_a_v1_0_decision_regret_protocol.md)
 - [运行环境矩阵](architecture/runtime_environment_matrix.md)
 - [项目结构说明](architecture/project_structure.md)
 
@@ -67,6 +69,7 @@
 - [ADR-0008 Plan A Next v0.6 multisource LOSO](../records/decisions/adr_0008_plan_a_next_v0_6_multisource_loso.md)
 - [ADR-0009 Plan A Next v0.6B source-invariant repair](../records/decisions/adr_0009_plan_a_next_v0_6b_source_invariant.md)
 - [ADR-0010 Plan A Next v0.6C near-OOD split repair](../records/decisions/adr_0010_plan_a_next_v0_6c_near_ood_split_repair.md)
+- [ADR-0011 Plan A V1.0 decision-regret paper benchmark](../records/decisions/adr_0011_plan_a_v1_0_decision_regret.md)
 - [2026-04-24 Plan A Next v0.2 issue ledger](../records/reviews/2026-04-24_review_plan_a_next_v0_2_issue_ledger.md)
 - [2026-04-25 Literature and project alignment review](../records/reviews/2026-04-25_review_literature_project_alignment.md)
 - [2026-04-25 V0.4 strict freeze scope control](../records/reviews/2026-04-25_review_v0_4_strict_freeze_scope_control.md)

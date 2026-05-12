@@ -61,6 +61,12 @@ class StudyRunMetric:
     seen_unseen_gap: float = math.nan
     near_ood_seen_unseen_gap: float = math.nan
     pair_scalar_delta: float = math.nan
+    decision_regret_pair_resolution_weighted_entropy_mean_regret: float = math.nan
+    decision_regret_best_scalar_mean_regret: float = math.nan
+    decision_regret_pair_vs_best_scalar_gain: float = math.nan
+    decision_regret_oracle_state_mean_regret: float = math.nan
+    decision_regret_worst_source_mean_regret: float = math.nan
+    decision_regret_seen_unseen_gap: float = math.nan
 
     def to_csv_row(self) -> dict[str, str | int | float]:
         return {
@@ -90,6 +96,14 @@ class StudyRunMetric:
             "seen_unseen_gap": self.seen_unseen_gap,
             "near_ood_seen_unseen_gap": self.near_ood_seen_unseen_gap,
             "pair_scalar_delta": self.pair_scalar_delta,
+            "decision_regret_pair_resolution_weighted_entropy_mean_regret": (
+                self.decision_regret_pair_resolution_weighted_entropy_mean_regret
+            ),
+            "decision_regret_best_scalar_mean_regret": self.decision_regret_best_scalar_mean_regret,
+            "decision_regret_pair_vs_best_scalar_gain": self.decision_regret_pair_vs_best_scalar_gain,
+            "decision_regret_oracle_state_mean_regret": self.decision_regret_oracle_state_mean_regret,
+            "decision_regret_worst_source_mean_regret": self.decision_regret_worst_source_mean_regret,
+            "decision_regret_seen_unseen_gap": self.decision_regret_seen_unseen_gap,
             "run_output_dir": self.run_output_dir,
         }
 
@@ -124,6 +138,12 @@ class CheckpointPolicyMetric:
     seen_unseen_gap: float = math.nan
     near_ood_seen_unseen_gap: float = math.nan
     pair_scalar_delta: float = math.nan
+    decision_regret_pair_resolution_weighted_entropy_mean_regret: float = math.nan
+    decision_regret_best_scalar_mean_regret: float = math.nan
+    decision_regret_pair_vs_best_scalar_gain: float = math.nan
+    decision_regret_oracle_state_mean_regret: float = math.nan
+    decision_regret_worst_source_mean_regret: float = math.nan
+    decision_regret_seen_unseen_gap: float = math.nan
 
     def to_csv_row(self) -> dict[str, str | int | float]:
         return {
@@ -154,6 +174,14 @@ class CheckpointPolicyMetric:
             "seen_unseen_gap": self.seen_unseen_gap,
             "near_ood_seen_unseen_gap": self.near_ood_seen_unseen_gap,
             "pair_scalar_delta": self.pair_scalar_delta,
+            "decision_regret_pair_resolution_weighted_entropy_mean_regret": (
+                self.decision_regret_pair_resolution_weighted_entropy_mean_regret
+            ),
+            "decision_regret_best_scalar_mean_regret": self.decision_regret_best_scalar_mean_regret,
+            "decision_regret_pair_vs_best_scalar_gain": self.decision_regret_pair_vs_best_scalar_gain,
+            "decision_regret_oracle_state_mean_regret": self.decision_regret_oracle_state_mean_regret,
+            "decision_regret_worst_source_mean_regret": self.decision_regret_worst_source_mean_regret,
+            "decision_regret_seen_unseen_gap": self.decision_regret_seen_unseen_gap,
             "run_output_dir": self.run_output_dir,
         }
 
@@ -181,6 +209,12 @@ AGGREGATE_METRIC_NAMES = (
     "seen_unseen_gap",
     "near_ood_seen_unseen_gap",
     "pair_scalar_delta",
+    "decision_regret_pair_resolution_weighted_entropy_mean_regret",
+    "decision_regret_best_scalar_mean_regret",
+    "decision_regret_pair_vs_best_scalar_gain",
+    "decision_regret_oracle_state_mean_regret",
+    "decision_regret_worst_source_mean_regret",
+    "decision_regret_seen_unseen_gap",
 )
 
 
@@ -773,6 +807,90 @@ def _optional_pair_auroc(report_output: Mapping[str, Any], artifact_key: str) ->
     return float(_single_csv_row(path)["pair_auroc"])
 
 
+_DECISION_PAIR_POLICY = "pair_resolution_ratio_state_weighted_content_entropy"
+_DECISION_ORACLE_POLICY = "oracle_state"
+_DECISION_SCALAR_POLICIES = (
+    "q_beta_top1_completion_beta_0_1",
+    "q_beta_top1_completion_beta_0_25",
+    "q_beta_top1_completion_beta_0_5",
+    "q_beta_top1_completion_beta_0_75",
+    "resolution_ratio",
+    "state_content_entropy",
+    "state_weighted_content_entropy",
+)
+
+
+def _optional_decision_regret(
+    report_output: Mapping[str, Any],
+    artifact_key: str,
+    policy_name: str,
+) -> float:
+    artifact_path = report_output.get(artifact_key, "")
+    if not artifact_path:
+        return math.nan
+    path = Path(str(artifact_path))
+    if not path.exists():
+        return math.nan
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        for row in csv.DictReader(handle):
+            if row.get("policy_name") == policy_name:
+                return float(row["mean_regret"])
+    return math.nan
+
+
+def _best_scalar_decision_regret(report_output: Mapping[str, Any], artifact_key: str) -> float:
+    return _min_non_nan(
+        tuple(
+            _optional_decision_regret(report_output, artifact_key, policy_name)
+            for policy_name in _DECISION_SCALAR_POLICIES
+        )
+    )
+
+
+def _decision_regret_metrics(report_output: Mapping[str, Any]) -> dict[str, float]:
+    pair_regret = _optional_decision_regret(
+        report_output,
+        "decision_regret_table",
+        _DECISION_PAIR_POLICY,
+    )
+    best_scalar_regret = _best_scalar_decision_regret(report_output, "decision_regret_table")
+    oracle_regret = _optional_decision_regret(
+        report_output,
+        "decision_regret_table",
+        _DECISION_ORACLE_POLICY,
+    )
+
+    source_regrets: list[tuple[str, float]] = []
+    for artifact_key in sorted(report_output):
+        if artifact_key == "decision_regret_table" or not artifact_key.endswith(
+            "_decision_regret_table"
+        ):
+            continue
+        if artifact_key == "ambiguous_vs_all_ood_decision_regret_table":
+            continue
+        value = _optional_decision_regret(report_output, artifact_key, _DECISION_PAIR_POLICY)
+        if not math.isnan(value):
+            source_regrets.append((artifact_key, value))
+    seen_regret = _mean_non_nan(
+        tuple(value for key, value in source_regrets if "ambiguous_vs_seen_ood_" in key)
+    )
+    unseen_regret = _mean_non_nan(
+        tuple(value for key, value in source_regrets if "ambiguous_vs_unseen_ood_" in key)
+    )
+    return {
+        "pair_regret": pair_regret,
+        "best_scalar_regret": best_scalar_regret,
+        "pair_vs_best_scalar_gain": math.nan
+        if math.isnan(pair_regret) or math.isnan(best_scalar_regret)
+        else best_scalar_regret - pair_regret,
+        "oracle_regret": oracle_regret,
+        "worst_source_regret": _max_non_nan(tuple(value for _, value in source_regrets)),
+        "seen_unseen_regret_gap": math.nan
+        if math.isnan(seen_regret) or math.isnan(unseen_regret)
+        else unseen_regret - seen_regret,
+    }
+
+
 def _mean_non_nan(values: Sequence[float]) -> float:
     filtered = [float(value) for value in values if not math.isnan(float(value))]
     if not filtered:
@@ -785,6 +903,13 @@ def _min_non_nan(values: Sequence[float]) -> float:
     if not filtered:
         return math.nan
     return min(filtered)
+
+
+def _max_non_nan(values: Sequence[float]) -> float:
+    filtered = [float(value) for value in values if not math.isnan(float(value))]
+    if not filtered:
+        return math.nan
+    return max(filtered)
 
 
 def _collect_source_slice_rows(
@@ -854,6 +979,7 @@ def _collect_run_metric(study_id: str, seed: int, run_output: Mapping[str, Any])
     source_values = (seen_svhn, seen_dtd, seen_lsun, seen_noise, seen_tiny, seen_cifar100, unseen_cifar100)
     pair_auroc = float(matched_row["pair_auroc"])
     scalar_auroc = float(matched_row["scalar_auroc"])
+    decision_metrics = _decision_regret_metrics(run_output["report"])
     return StudyRunMetric(
         study_id=study_id,
         model_family=str(matched_row.get("model_family", run_output.get("model_family", "frcnet_explicit_unknown"))),
@@ -884,6 +1010,12 @@ def _collect_run_metric(study_id: str, seed: int, run_output: Mapping[str, Any])
         if math.isnan(seen_near) or math.isnan(unseen_cifar100)
         else seen_near - unseen_cifar100,
         pair_scalar_delta=pair_auroc - scalar_auroc,
+        decision_regret_pair_resolution_weighted_entropy_mean_regret=decision_metrics["pair_regret"],
+        decision_regret_best_scalar_mean_regret=decision_metrics["best_scalar_regret"],
+        decision_regret_pair_vs_best_scalar_gain=decision_metrics["pair_vs_best_scalar_gain"],
+        decision_regret_oracle_state_mean_regret=decision_metrics["oracle_regret"],
+        decision_regret_worst_source_mean_regret=decision_metrics["worst_source_regret"],
+        decision_regret_seen_unseen_gap=decision_metrics["seen_unseen_regret_gap"],
     )
 
 
@@ -921,6 +1053,7 @@ def _collect_policy_metric(
     seen_near = _mean_non_nan((seen_tiny, seen_cifar100))
     pair_auroc = float(matched_row["pair_auroc"])
     scalar_auroc = float(matched_row["scalar_auroc"])
+    decision_metrics = _decision_regret_metrics(report_output)
     return CheckpointPolicyMetric(
         study_id=study_id,
         model_family=str(matched_row.get("model_family", fallback_model_family)),
@@ -952,6 +1085,12 @@ def _collect_policy_metric(
         if math.isnan(seen_near) or math.isnan(unseen_cifar100)
         else seen_near - unseen_cifar100,
         pair_scalar_delta=pair_auroc - scalar_auroc,
+        decision_regret_pair_resolution_weighted_entropy_mean_regret=decision_metrics["pair_regret"],
+        decision_regret_best_scalar_mean_regret=decision_metrics["best_scalar_regret"],
+        decision_regret_pair_vs_best_scalar_gain=decision_metrics["pair_vs_best_scalar_gain"],
+        decision_regret_oracle_state_mean_regret=decision_metrics["oracle_regret"],
+        decision_regret_worst_source_mean_regret=decision_metrics["worst_source_regret"],
+        decision_regret_seen_unseen_gap=decision_metrics["seen_unseen_regret_gap"],
     )
 
 

@@ -16,9 +16,12 @@ REPO_ROOT = bootstrap_repo(configure_runtime_cache=True)
 
 from frcnet.data import ManifestBackedVisionDataset, collate_manifest_samples, load_plan_a_source_datasets
 from frcnet.data import read_manifest_jsonl
-from frcnet.evaluation import (
+from frcnet.evaluation.reference_baselines import (
     ReferenceScoreRecord,
-    softmax_entropy_reference_scores,
+    SOFTMAX_CE_REFERENCE_FAMILY,
+    build_reference_score_records,
+    compute_softmax_reference_scores,
+    resolve_softmax_reference_score_names,
     write_reference_score_records,
 )
 from frcnet.models import SoftmaxReferenceModel
@@ -47,6 +50,7 @@ def main() -> int:
     protocol_config = _load_yaml_section(args.protocol_config, "protocol")
     model_config = _load_yaml_section(args.model_config, "model")
     reference_config = _load_yaml_section(args.reference_config, "reference_train")
+    score_names = resolve_softmax_reference_score_names(reference_config)
     runtime_config = dict(reference_config.get("runtime", {}))
     runtime_spec = resolve_runtime(
         requested_backend=runtime_config.get("backend", "auto"),
@@ -81,31 +85,33 @@ def main() -> int:
         for batch_input in dataloader:
             image_batch = batch_input.image.to(runtime_spec.device, dtype=runtime_spec.dtype)
             logits = model(image_batch)
-            scores = softmax_entropy_reference_scores(logits).cpu().tolist()
-            for index, score_value in enumerate(scores):
-                records.append(
-                    ReferenceScoreRecord(
-                        sample_id=batch_input.sample_id[index],
-                        split_name=batch_input.split_name[index],
-                        cohort_name=batch_input.cohort_name[index],
-                        source_dataset_name=batch_input.source_dataset_name[index],
-                        reference_model_family="softmax_ce_reference",
-                        reference_run_id=args.run_id,
-                        reference_score_name="softmax_entropy",
-                        reference_score_value=float(score_value),
-                    )
+            score_tensors = compute_softmax_reference_scores(logits, score_names)
+            records.extend(
+                build_reference_score_records(
+                    score_tensors=score_tensors,
+                    sample_ids=batch_input.sample_id,
+                    split_names=batch_input.split_name,
+                    cohort_names=batch_input.cohort_name,
+                    source_dataset_names=batch_input.source_dataset_name,
+                    reference_model_family=SOFTMAX_CE_REFERENCE_FAMILY,
+                    reference_run_id=args.run_id,
                 )
+            )
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-    score_path = write_reference_score_records(records, output_dir / "reference_score_records.jsonl")
+    score_path = write_reference_score_records(
+        records,
+        output_dir / "reference_score_records.jsonl",
+    )
     summary_path = output_dir / "reference_score_summary.json"
     summary_path.write_text(
         json.dumps(
             {
                 "run_id": args.run_id,
-                "model_family": "softmax_ce_reference",
-                "reference_score_name": "softmax_entropy",
+                "model_family": SOFTMAX_CE_REFERENCE_FAMILY,
+                "reference_score_name": score_names[0],
+                "reference_score_names": list(score_names),
                 "reference_score_path": str(score_path),
                 "record_count": len(records),
                 "checkpoint_path": str(args.checkpoint_path),
